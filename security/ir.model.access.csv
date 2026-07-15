@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_client_project,client.project,model_client_project,,1,1,1,1
+access_client_requirement_line,client.requirement.line,model_client_requirement_line,,1,1,1,1
+
+access_client_workflow_line,client.workflow.line,model_client_workflow_line,,1,1,1,1
+access_client_report_line,client.report.line,model_client_report_line,,1,1,1,1

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List View -->
+    <record id="view_client_project_list" model="ir.ui.view">
+        <field name="name">client.project.list</field>
+        <field name="model">client.project</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="project_name"/>
+                <field name="client_name"/>
+                <field name="meeting_date"/>
+                <field name="business_type"/>
+                <field name="priority"/>
+                <field name="status"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_client_project_form" model="ir.ui.view">
+        <field name="name">client.project.form</field>
+        <field name="model">client.project</field>
+        <field name="arch" type="xml">
+
+            <form string="Client Requirement">
+
+                <header>
+
+                    <button
+                        name="action_export_excel"
+                        string="Export Excel"
+                        type="object"
+                        class="btn-primary"/>
+
+                </header>
+
+                <sheet>
+
+                    <group>
+
+                        <group>
+                            <field name="project_name"/>
+                            <field name="client_name"/>
+                            <field name="meeting_date"/>
+                        </group>
+
+                        <group>
+                            <field name="developer"/>
+                            <field name="business_type"/>
+                            <field name="priority"/>
+                            <field name="status"/>
+                        </group>
+
+                    </group>
+
+                    <notebook>
+
+                        <page string="Business Process">
+                            <group>
+                                <field name="current_process"/>
+                                <field name="process_description"/>
+                            </group>
+                        </page>
+
+                        <page string="Current Problems">
+                            <group>
+                                <field name="current_problems"/>
+                            </group>
+                        </page>
+
+                        <page string="Requirements">
+
+                            <field name="requirement_line_ids">
+
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="requirement_name"/>
+                                    <field name="module_name"/>
+                                    <field name="priority"/>
+                                    <field name="status"/>
+                                    <field name="assigned_to"/>
+                                </list>
+
+                                <form>
+                                    <group>
+                                        <field name="requirement_name"/>
+                                        <field name="module_name"/>
+                                        <field name="priority"/>
+                                        <field name="status"/>
+                                        <field name="assigned_to"/>
+                                        <field name="description"/>
+                                    </group>
+                                </form>
+
+                            </field>
+
+                        </page>
+
+                        <page string="Workflow">
+
+                            <field name="workflow_line_ids">
+
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="step_name"/>
+                                    <field name="responsible"/>
+                                    <field name="next_step"/>
+                                    <field name="status"/>
+                                </list>
+
+                                <form>
+                                    <group>
+                                        <field name="step_name"/>
+                                        <field name="responsible"/>
+                                        <field name="next_step"/>
+                                        <field name="status"/>
+                                        <field name="notes"/>
+                                    </group>
+                                </form>
+
+                            </field>
+
+                        </page>
+
+                        <page string="Reports">
+
+                            <field name="report_line_ids">
+
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="report_name"/>
+                                    <field name="format"/>
+                                    <field name="priority"/>
+                                    <field name="required"/>
+                                </list>
+
+                                <form>
+                                    <group>
+                                        <field name="report_name"/>
+                                        <field name="format"/>
+                                        <field name="priority"/>
+                                        <field name="required"/>
+                                        <field name="remarks"/>
+                                    </group>
+                                </form>
+
+                            </field>
+
+                        </page>
+
+                        <page string="Special Rules">
+                            <group>
+                                <field name="special_rules"/>
+                            </group>
+                        </page>
+
+                        <page string="Open Questions">
+                            <group>
+                                <field name="open_questions"/>
+                            </group>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="client_project_action" model="ir.actions.act_window">
+        <field name="name">Projects</field>
+        <field name="res_model">client.project</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menus -->
+    <menuitem id="client_requirement_root_menu"
+              name="Client Requirement"
+              sequence="10"/>
+
+    <menuitem id="client_project_menu"
+              name="Projects"
+              parent="client_requirement_root_menu"
+              action="client_project_action"/>
+
+</odoo>
