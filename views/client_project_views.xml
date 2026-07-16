@@ -33,6 +33,12 @@
                         type="object"
                         class="btn-primary"/>
 
+                    <button
+                       name="action_export_pdf"
+                       string="Export PDF"
+                       type="object"
+                       class="btn-secondary"/>
+
                 </header>
 
                 <sheet>

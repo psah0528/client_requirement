@@ -120,104 +120,130 @@ class ClientRequirementExport(http.Controller):
                 ("Content-Disposition",'attachment; filename="Client_Requirement.xlsx"')
             ]
         )
-    # PDF #####################################################################
+   
 
 
+    # PDF ############################################################
     @http.route(
-    "/client_requirement/pdf/<int:project_id>",
-    type="http",
-    auth="user",
+        "/client_requirement/pdf/<int:project_id>",
+        type="http",
+        auth="user",
     )
+
     def export_pdf(self, project_id, **kw):
 
-      project = request.env["client.project"].browse(project_id)
+        project = request.env["client.project"].browse(project_id)
 
-      buffer = io.BytesIO()
+        output = io.BytesIO()
 
-      doc = SimpleDocTemplate(buffer)
+        pdf = SimpleDocTemplate(output)
 
-      styles = getSampleStyleSheet()
+        styles = getSampleStyleSheet()
 
-      elements = []
+        elements = []
 
-      elements.append(Paragraph("<b>CLIENT REQUIREMENT</b>", styles["Title"]))
-
-      elements.append(
-        Table(
-            [
-                ["Project Name", project.project_name or ""],
-                ["Client", project.client_name or ""],
-                ["Developer", project.developer or ""],
-                ["Meeting Date", str(project.meeting_date or "")],
-                [
-                    "Business Type",
-                    dict(project._fields["business_type"].selection).get(
-                        project.business_type,
-                        "",
-                    ),
-                ],
-                ["Priority", project.priority or ""],
-                ["Status", project.status or ""],
-            ]
+        elements.append(
+            Paragraph(
+                "CLIENT REQUIREMENT DOCUMENT",
+                styles["Title"]
+            )
         )
-    )
 
-      elements.append(Paragraph("<br/><b>Business Process</b>", styles["Heading2"]))
-      elements.append(
-        Paragraph(project.process_description or "-", styles["BodyText"])
-    )
+        data = [
+            ["Project Name", project.project_name or ""],
+            ["Client Name", project.client_name or ""],
+            ["Developer", project.developer or ""],
+            ["Meeting Date", str(project.meeting_date or "")],
+            ["Priority", project.priority or ""],
+            ["Status", project.status or ""],
+        ]
 
-      elements.append(Paragraph("<br/><b>Current Problems</b>", styles["Heading2"]))
-      elements.append(
-        Paragraph(project.current_problems or "-", styles["BodyText"])
-    )
+        table = Table(data)
 
-      elements.append(Paragraph("<br/><b>Special Rules</b>", styles["Heading2"]))
-      elements.append(
-        Paragraph(project.special_rules or "-", styles["BodyText"])
-    )
+        table.setStyle(
+            TableStyle(
+                [
+                    ("GRID", (0,0), (-1,-1), 1, colors.black),
+                    ("VALIGN", (0,0), (-1,-1), "TOP"),
+                ]
+            )
+        )
 
-      elements.append(Paragraph("<br/><b>Open Questions</b>", styles["Heading2"]))
-      elements.append(
-        Paragraph(project.open_questions or "-", styles["BodyText"])
-    )
+        elements.append(table)
 
-      if project.requirement_line_ids:
+        elements.append(
+            Paragraph(
+                "Business Process",
+                styles["Heading2"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                project.process_description or "",
+                styles["BodyText"]
+            )
+        )
+
+
+        elements.append(
+            Paragraph(
+                "Current Problems",
+                styles["Heading2"]
+            )
+        )
+
+        elements.append(
+            Paragraph(
+                project.current_problems or "",
+                styles["BodyText"]
+            )
+        )
+
+        # ================= Requirements =================
+
+        if project.requirement_line_ids:
+
+         elements.append(Paragraph("<br/><b>Requirements</b>", styles["Heading2"]))
 
         data = [["Requirement", "Module", "Priority", "Status"]]
 
         for rec in project.requirement_line_ids:
-            data.append([
-                rec.requirement_name or "",
-                rec.module_name or "",
-                rec.priority or "",
-                rec.status or "",
-            ])
+         data.append([
+            rec.requirement_name or "",
+            rec.module_name or "",
+            rec.priority or "",
+            rec.status or "",
+        ])
 
         table = Table(data)
 
         table.setStyle(TableStyle([
-            ("GRID", (0, 0), (-1, -1), 1, colors.black),
-            ("BACKGROUND", (0, 0), (-1, 0), colors.lightblue),
-            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ]))
+        ("GRID", (0, 0), (-1, -1), 1, colors.black),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#4472C4")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+    ]))
 
-        elements.append(Paragraph("<br/><b>Requirements</b>", styles["Heading2"]))
         elements.append(table)
 
-      doc.build(elements)
 
-      pdf = buffer.getvalue()
 
-      buffer.close()
 
-      return request.make_response(
-        pdf,
-        headers=[
-            ("Content-Type", "application/pdf"),
-            (
-                "Content-Disposition",
-                'attachment; filename="Client_Requirement.pdf"',
-            ),
-        ],
-    )
+        pdf.build(elements)
+
+        output.seek(0)
+
+        return request.make_response(
+            output.read(),
+            headers=[
+                (
+                    "Content-Type",
+                    "application/pdf",
+                ),
+                (
+                    "Content-Disposition",
+                    'attachment; filename="Client_Requirement.pdf"',
+                ),
+            ],
+        )    

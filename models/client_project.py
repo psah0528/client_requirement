@@ -118,3 +118,13 @@ class ClientProject(models.Model):
         "url": "/client_requirement/export/%s" % self.id,
         "target": "self",
     }
+
+
+    # PDF ######################################
+    def action_export_pdf(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": "/client_requirement/pdf/%s" % self.id,
+            "target": "new",
+        }
